@@ -17,9 +17,13 @@ app.use(corsMiddleware);
 app.use(parser);
 
 app.get("/stream", (request, response) => {
-  stream.updateInit(db.messages);
+  const action = {
+    type: "ALL_MESSAGES",
+    payload: db.messages
+  };
+
+  stream.updateInit(action);
   stream.init(request, response);
-  console.log("hello");
 });
 
 app.post("/message", (request, response) => {
@@ -29,8 +33,11 @@ app.post("/message", (request, response) => {
 
   response.send(text);
 
-  stream.send(text);
-  console.log(db);
+  const action = {
+    type: "NEW_MESSAGE",
+    payload: text
+  };
+  stream.send(action);
 });
 
 app.listen(port, () => console.log(`Listening on ${port}`));
